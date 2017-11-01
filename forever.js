@@ -69,7 +69,7 @@ var forever=(function(){
 			return curEle.previousElementSibling;
 		}else{
 			var pre = curEle.previousSibling;
-			while(pre && pre.nodeType !== 1 ){
+			while( pre && pre.nodeType !== 1 ){
 				pre = pre.previousSibling;
 			}
 			return pre;
@@ -81,7 +81,7 @@ var forever=(function(){
 			return curEle.nextElementSibling;
 		}else{
 			var next = curEle.nextSibling;
-			while(next && next.nodeType !== 1 ){
+			while( next && next.nodeType !== 1 ){
 				next = next.nextSibling;
 			}
 			return next;
@@ -220,11 +220,12 @@ var forever=(function(){
 			val = window.getComputedStyle(this,null)[attr];
 		}else{
 
-			val = this.currentStyle[attr];
-
 			if( attr === 'opacity' ){
-				reg = /^alpha\(opacity=(\d+(?:\.\d+)?)\)$/i
+				val = this.currentStyle['filter'];
+				reg = /^alpha\(opacity(?:=|:)(\d+(?:\.\d+)?)\)$/i
 				val = reg.test(val) ? reg.exec(val)[1]/100 : 1;
+			}else{
+				val = this.currentStyle[attr];
 			}
 			
 		}
