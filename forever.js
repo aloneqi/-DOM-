@@ -262,9 +262,9 @@ var forever=(function(){
 	function setGroupCss( options ){
 		if ( {}.toString.call(options) !== "[object Object]" ) return;
 
-		for (var key in options){
+		for ( var key in options ){
 			if ( options.hasOwnProperty(key) ) {
-				setCss( this, key ,options[key] );
+				setCss.call( this, key ,options[key] );
 			}
 		}
 	}
@@ -314,3 +314,235 @@ var forever=(function(){
 		css:css
 	}
 })()
+
+
+
+/*
+ * Orbit.js
+ * t: current time（当前时间）
+ * b: beginning value（初始值）
+ * c: change in value（变化量）
+ * d: duration（持续时间）
+ * easeIn：从0开始加速
+ * easeOut：减速到0
+ * easeInOut：先加速后减速
+*/
+
+var Orbit = {
+	Linear: function(t, b, c, d) { 
+		return c * t / d + b; 
+	},
+	Quad: { //二次方的运动
+        easeIn: function(t, b, c, d) {
+            return c * (t /= d) * t + b;
+        },
+        easeOut: function(t, b, c, d) {
+            return -c *(t /= d)*(t-2) + b;
+        },
+        easeInOut: function(t, b, c, d) {
+            if ((t /= d / 2) < 1) return c / 2 * t * t + b;
+            return -c / 2 * ((--t) * (t-2) - 1) + b;
+        }
+    },
+    Cubic: { //三次方的运动
+        easeIn: function(t, b, c, d) {
+            return c * (t /= d) * t * t + b;
+        },
+        easeOut: function(t, b, c, d) {
+            return c * ((t = t/d - 1) * t * t + 1) + b;
+        },
+        easeInOut: function(t, b, c, d) {
+            if ((t /= d / 2) < 1) return c / 2 * t * t*t + b;
+            return c / 2*((t -= 2) * t * t + 2) + b;
+        }
+    },
+    Quart: { //四次方的运动
+        easeIn: function(t, b, c, d) {
+            return c * (t /= d) * t * t*t + b;
+        },
+        easeOut: function(t, b, c, d) {
+            return -c * ((t = t/d - 1) * t * t*t - 1) + b;
+        },
+        easeInOut: function(t, b, c, d) {
+            if ((t /= d / 2) < 1) return c / 2 * t * t * t * t + b;
+            return -c / 2 * ((t -= 2) * t * t*t - 2) + b;
+        }
+    },
+    Quint: { //五次方的运动
+        easeIn: function(t, b, c, d) {
+            return c * (t /= d) * t * t * t * t + b;
+        },
+        easeOut: function(t, b, c, d) {
+            return c * ((t = t/d - 1) * t * t * t * t + 1) + b;
+        },
+        easeInOut: function(t, b, c, d) {
+            if ((t /= d / 2) < 1) return c / 2 * t * t * t * t * t + b;
+            return c / 2*((t -= 2) * t * t * t * t + 2) + b;
+        }
+    },
+    Sine: { //正弦曲线的运动
+        easeIn: function(t, b, c, d) {
+            return -c * Math.cos(t/d * (Math.PI/2)) + c + b;
+        },
+        easeOut: function(t, b, c, d) {
+            return c * Math.sin(t/d * (Math.PI/2)) + b;
+        },
+        easeInOut: function(t, b, c, d) {
+            return -c / 2 * (Math.cos(Math.PI * t/d) - 1) + b;
+        }
+    },
+    Expo: { //指数曲线的运动
+        easeIn: function(t, b, c, d) {
+            return (t==0) ? b : c * Math.pow(2, 10 * (t/d - 1)) + b;
+        },
+        easeOut: function(t, b, c, d) {
+            return (t==d) ? b + c : c * (-Math.pow(2, -10 * t/d) + 1) + b;
+        },
+        easeInOut: function(t, b, c, d) {
+            if (t==0) return b;
+            if (t==d) return b+c;
+            if ((t /= d / 2) < 1) return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
+            return c / 2 * (-Math.pow(2, -10 * --t) + 2) + b;
+        }
+    },
+    Circ: { //圆形曲线的运动
+        easeIn: function(t, b, c, d) {
+            return -c * (Math.sqrt(1 - (t /= d) * t) - 1) + b;
+        },
+        easeOut: function(t, b, c, d) {
+            return c * Math.sqrt(1 - (t = t/d - 1) * t) + b;
+        },
+        easeInOut: function(t, b, c, d) {
+            if ((t /= d / 2) < 1) return -c / 2 * (Math.sqrt(1 - t * t) - 1) + b;
+            return c / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1) + b;
+        }
+    },
+    Elastic: { //指数衰减的正弦曲线运动
+        easeIn: function(t, b, c, d, a, p) {
+            var s;
+            if (t==0) return b;
+            if ((t /= d) == 1) return b + c;
+            if (typeof p == "undefined") p = d * .3;
+            if (!a || a < Math.abs(c)) {
+                s = p / 4;
+                a = c;
+            } else {
+                s = p / (2 * Math.PI) * Math.asin(c / a);
+            }
+            return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
+        },
+        easeOut: function(t, b, c, d, a, p) {
+            var s;
+            if (t==0) return b;
+            if ((t /= d) == 1) return b + c;
+            if (typeof p == "undefined") p = d * .3;
+            if (!a || a < Math.abs(c)) {
+                a = c; 
+                s = p / 4;
+            } else {
+                s = p/(2*Math.PI) * Math.asin(c/a);
+            }
+            return (a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b);
+        },
+        easeInOut: function(t, b, c, d, a, p) {
+            var s;
+            if (t==0) return b;
+            if ((t /= d / 2) == 2) return b+c;
+            if (typeof p == "undefined") p = d * (.3 * 1.5);
+            if (!a || a < Math.abs(c)) {
+                a = c; 
+                s = p / 4;
+            } else {
+                s = p / (2  *Math.PI) * Math.asin(c / a);
+            }
+            if (t < 1) return -.5 * (a * Math.pow(2, 10* (t -=1 )) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
+            return a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p ) * .5 + c + b;
+        }
+    },
+    Back: { //超过范围的三次方运动
+        easeIn: function(t, b, c, d, s) {
+            if (typeof s == "undefined") s = 1.70158;
+            return c * (t /= d) * t * ((s + 1) * t - s) + b;
+        },
+        easeOut: function(t, b, c, d, s) {
+            if (typeof s == "undefined") s = 1.70158;
+            return c * ((t = t/d - 1) * t * ((s + 1) * t + s) + 1) + b;
+        },
+        easeInOut: function(t, b, c, d, s) {
+            if (typeof s == "undefined") s = 1.70158; 
+            if ((t /= d / 2) < 1) return c / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + b;
+            return c / 2*((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
+        }
+    },
+    Bounce: { //指数衰减的反弹运动
+        easeIn: function(t, b, c, d) {
+            return c - Orbit.Bounce.easeOut(d-t, 0, c, d) + b;
+        },
+        easeOut: function(t, b, c, d) {
+            if ((t /= d) < (1 / 2.75)) {
+                return c * (7.5625 * t * t) + b;
+            } else if (t < (2 / 2.75)) {
+                return c * (7.5625 * (t -= (1.5 / 2.75)) * t + .75) + b;
+            } else if (t < (2.5 / 2.75)) {
+                return c * (7.5625 * (t -= (2.25 / 2.75)) * t + .9375) + b;
+            } else {
+                return c * (7.5625 * (t -= (2.625 / 2.75)) * t + .984375) + b;
+            }
+        },
+        easeInOut: function(t, b, c, d) {
+            if (t < d / 2) {
+                return Orbit.Bounce.easeIn(t * 2, 0, c, d) * .5 + b;
+            } else {
+                return Orbit.Bounce.easeOut(t * 2 - d, 0, c, d) * .5 + c * .5 + b;
+            }
+        }
+    }
+}
+
+~function(){
+	function animation( curEle, options, duration, effect, callBack ){
+		window.clearInterval(curEle.foreverTimer);
+		duration = duration || 400;
+		var beginning = {}, change = {}, method = Orbit.Linear;
+
+		if( typeof effect === "string"){
+
+			method = Orbit[effect]['easeIn'];
+
+		}else if( {}.toString.call(effect) === "[object Array]" ){
+
+			method = Orbit[effect[0]][effect[1]];
+
+		}else if( typeof effect === "function" ){
+
+			 callBack = effect;
+		}
+
+		for (var key in options){
+			if(options.hasOwnProperty(key)){
+				beginning[key] = forever.css(curEle,key);
+				change[key] = options[key] - beginning[key];
+			}
+		}
+		var time = 0;
+		curEle.foreverTimer = window.setInterval(function(){
+			time +=10;
+			if( time >= duration ){
+				forever.css(curEle,options);
+				window.clearInterval(curEle.foreverTimer);
+				callBack && callBack();
+				return;
+			}
+
+			for( key in options ){
+				if( options.hasOwnProperty(key) ){
+					var current = method( time, beginning[key], change[key], duration );
+					forever.css( curEle, key, current );
+				}
+			}
+
+		},10);
+	}
+
+	window.foreverAnimation = animation;
+}()
