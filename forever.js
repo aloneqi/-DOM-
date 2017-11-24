@@ -502,12 +502,19 @@ var Orbit = {
 ~function(){
 	function animation( curEle, options, duration, effect, callBack ){
 		window.clearInterval(curEle.foreverTimer);
-		duration = duration || 400;
+
+		if(typeof duration === "function"){
+			callBack = duration;
+			duration = 400;
+		}else{
+			duration = duration || 400;
+		}
+
 		var beginning = {}, change = {}, method = Orbit.Linear;
 
-		if( typeof effect === "string"){
+		if( typeof effect === "string" ){
 
-			method = Orbit[effect]['easeIn'];
+			effect !== 'Linear'? method = Orbit[effect]['easeIn'] : null;
 
 		}else if( {}.toString.call(effect) === "[object Array]" ){
 
@@ -524,7 +531,9 @@ var Orbit = {
 				change[key] = options[key] - beginning[key];
 			}
 		}
+		
 		var time = 0;
+
 		curEle.foreverTimer = window.setInterval(function(){
 			time +=10;
 			if( time >= duration ){
