@@ -18,7 +18,6 @@
     }
     function run() {
         var e = window.event;
-        console.log(e);
         var type = e.type;
         e.target = e.srcElement;
         e.stopPropagation = function () {
